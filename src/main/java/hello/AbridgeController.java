@@ -24,14 +24,13 @@ public class AbridgeController {
 
     @PostMapping("")
     public String create(@ModelAttribute("Abridge") Abridge abridge, Model model) {
-            String hash = codeGenerator.generate();
-            repository.save(new Abridge(abridge.getOriginalUrl(), hash));
-            model.addAttribute("Abridge", repository.findByHash(hash));
-            System.out.println(abridge.getHash());
+        String hash = codeGenerator.generate();
+        repository.save(new Abridge(abridge.getOriginalUrl(), hash));
+        model.addAttribute("Abridge", repository.findByHash(hash));
         return "abridgeUrl/success";
     }
 
-    @GetMapping(path = "/{hash}")
+    @GetMapping( "/{hash}")
     public ResponseEntity<?> redirect(@PathVariable("hash") String hash) {
         Abridge abridge = repository.findByHash(hash);
         if (abridge != null) {
@@ -41,5 +40,12 @@ public class AbridgeController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/admin")
+    public String adminTable(Model model){
+        Iterable<Abridge> abridges = repository.findAll();
+        model.addAttribute("abridges", abridges);
+        return "abridgeUrl/admin";
     }
 }
